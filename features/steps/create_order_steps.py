@@ -11,10 +11,10 @@ def given_user_logged_in_and_on_order_creation_page(context):
 @when('the user submits the order creation form with valid details for an offer')
 def when_user_submits_valid_offer_details(context):
     form_data = {
-        'hidden': '1',
+        'hidden': '2',
         'quantity': '100',
         'type': 'Offer',
-        'price': '3310.00'
+        'price': '478.00'
     }
     context.response = context.client.post('/order_place', data=form_data, follow_redirects=True)
     assert context.response.status_code == 200, "Reaching order_place failed."
@@ -23,10 +23,10 @@ def when_user_submits_valid_offer_details(context):
 @when('the user submits the order creation form with valid details for a bid')
 def when_user_submits_valid_bid_details(context):
     form_data = {
-        'hidden': '1',
+        'hidden': '2',
         'quantity': '50',
         'type': 'Bid',
-        'price': '3280.00'
+        'price': '498.00'
     }
     context.response = context.client.post('/order_place', data=form_data, follow_redirects=True)
     assert context.response.status_code == 200, "Reaching order_place failed."
@@ -35,10 +35,10 @@ def when_user_submits_valid_bid_details(context):
 @when('the user submits the order creation form with invalid details')
 def when_user_submits_invalid_order_details(context):
     form_data = {
-        'hidden': '1',
+        'hidden': '2',
         'quantity': '-10',
         'type': 'Bid',
-        'price': '3320.00'
+        'price': '478.00'
     }
     context.response = context.client.post('/order_place', data=form_data, follow_redirects=True)
     assert context.response.status_code == 200, "Reaching order_place failed."

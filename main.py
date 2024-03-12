@@ -6,34 +6,20 @@ from tools import *
 
 from flask_wtf.csrf import CSRFProtect
 from datetime import datetime
-from apscheduler.schedulers.background import BackgroundScheduler
-import atexit
-import stockmarket
+
 
 app = Flask(__name__)
 app.secret_key = '!secret'
 csrf = CSRFProtect(app) # Add CSRF-protection (Cross-site request forgery) to the Flask-app.
 
-db.reset_and_populate() # TODO: Remove once done with testing the database.
-
-def start_scheduler():
-    ''' Scheduler for updating the AAPL price hourly
-    '''
-    print("Starting scheduler")
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(stockmarket.hourly_update, 'interval', hours=1, next_run_time=datetime.now())
-    scheduler.start()
-    print("Scheduler started")
-    atexit.register(lambda: scheduler.shutdown())
+db.reset_and_populate() # COMMENT OUT IF NOT MOCK POPULATING DATABASE!
+db.start_scheduler() 
 
 if __name__ == '__main__':
     """Boots the Flask-app environment.
     Configures the host, port and debug-mode.
     """
-    # THIS IS COMMENTED OUT SO THE API CALLS AREN'T SPAMMED CONSTANTLY
-    # You can test by uncommenting it and it should retrieve the price 
-    #start_scheduler() 
-    app.run(host='127.0.0.1', port=8080, debug=True)
+    app.run(host='127.0.0.1', port=8080, debug=False)
 
 
 ########## REST ROUTE FUNCTIONS ##########
@@ -299,6 +285,8 @@ def build_offer_hierarchy():
         stocks = []
     for stock in stocks:
         offers = db.get_stock_offers(stock['stockid'])
+        if offers is None:
+            offers = []
         if not offers:
             continue
         for offer in offers:
@@ -317,6 +305,8 @@ def build_bid_hierarchy():
         stocks = []
     for stock in stocks:
         bids = db.get_stock_bids(stock['stockid'])
+        if bids is None:
+            bids = []
         for bid in bids:
             traderid = bid.pop('traderid')
             bid['buyer'] = db.get_trader_info(traderid)
